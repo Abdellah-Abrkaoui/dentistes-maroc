@@ -9,6 +9,8 @@ import DentistsListing from "./pages/DentistsListing";
 import DentistDetail from "./pages/DentistDetail";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./ProtectedRoute";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +25,15 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dentists" element={<DentistsListing />} />
             <Route path="/dentist/:id" element={<DentistDetail />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />{" "}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -9,6 +9,7 @@ import {
   getDentistsBySpecialty,
   updateDentistById,
 } from "../controllers/DentistsController.js";
+import { verifyFirebaseToken } from "../middleware/auth.js";
 
 // GET all dentists
 router.get("/", getAllDentists);
@@ -23,12 +24,12 @@ router.get("/city/:city", getDentistsByCity);
 router.get("/specialty/:specialty", getDentistsBySpecialty);
 
 // POST new dentist (admin)
-router.post("/", createDentist);
+router.post("/", verifyFirebaseToken, createDentist);
 
 // PUT update dentist by ID (admin)
-router.put("/:id", updateDentistById);
+router.put("/:id", verifyFirebaseToken, updateDentistById);
 
 // DELETE dentist by ID (admin)
-router.delete("/:id", deleteDentistById);
+router.delete("/:id", verifyFirebaseToken, deleteDentistById);
 
 export default router;

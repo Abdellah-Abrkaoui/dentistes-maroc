@@ -11,14 +11,31 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+import { auth } from "../firebase/firebase";
+import { signOut, onAuthStateChanged, User } from "firebase/auth";
+import { useEffect, useState } from "react";
+
 export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
   const location = useLocation();
+  const [user, setUser] = useState<User | null>(null);
+
+  // Detect logged-in user
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return unsubscribe;
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    window.location.href = "/";
+  };
 
   const navLinks = [
     { path: "/", label: t("home") },
     { path: "/dentists", label: t("dentists") },
-    { path: "/admin", label: t("admin") },
   ];
 
   const languages = [
@@ -34,7 +51,9 @@ export const Navbar = () => {
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-xl">D</span>
           </div>
-          <span className="text-xl font-bold text-foreground">Dentistes Maroc</span>
+          <span className="text-xl font-bold text-foreground">
+            Dentistes Maroc
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -54,6 +73,13 @@ export const Navbar = () => {
             </Link>
           ))}
 
+          {/* LOGOUT BUTTON → shown only if user is logged in */}
+          {user && (
+            <Button variant="destructive" size="sm" onClick={handleLogout}>
+              Logout
+            </Button>
+          )}
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="gap-2">
@@ -66,9 +92,7 @@ export const Navbar = () => {
                 <DropdownMenuItem
                   key={lang.code}
                   onClick={() => setLanguage(lang.code as any)}
-                  className={cn(
-                    language === lang.code && "bg-accent"
-                  )}
+                  className={cn(language === lang.code && "bg-accent")}
                 >
                   {lang.label}
                 </DropdownMenuItem>
@@ -90,9 +114,7 @@ export const Navbar = () => {
                 <DropdownMenuItem
                   key={lang.code}
                   onClick={() => setLanguage(lang.code as any)}
-                  className={cn(
-                    language === lang.code && "bg-accent"
-                  )}
+                  className={cn(language === lang.code && "bg-accent")}
                 >
                   {lang.label}
                 </DropdownMenuItem>
@@ -122,6 +144,17 @@ export const Navbar = () => {
                     {link.label}
                   </Link>
                 ))}
+
+                {/* Mobile Logout */}
+                {user && (
+                  <Button
+                    variant="destructive"
+                    className="mt-4"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
+                )}
               </div>
             </SheetContent>
           </Sheet>
